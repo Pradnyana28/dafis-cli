@@ -1,0 +1,77 @@
+{
+  "name": "duplicate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node --inspect=5858 -r ts-node/register ./src/app.ts",
+    "start:watch": "nodemon",
+    "seed": "node -r ts-node/register ./src/database/seed.ts",
+    "mix": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "mix:hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "mix:watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js --watch",
+    "prod": "npm run production",
+    "production": "rm -rf dist && npm run build && mkdir dist/resources && cp -r src/resources/views dist/resources/views && npm run mix",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "I Kadek Pradnyana <kadek.pradnyana@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.17.6",
+    "axios": "^0.19.2",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "busboy": "^0.3.1",
+    "chalk": "^4.0.0",
+    "compression": "^1.7.4",
+    "connect-mongo": "^3.2.0",
+    "cors": "^2.8.5",
+    "csrf": "^3.1.0",
+    "dotenv": "^8.2.0",
+    "errorhandler": "^1.5.1",
+    "express": "^4.17.1",
+    "express-pino-logger": "^4.0.0",
+    "express-session": "^1.17.1",
+    "faker": "^4.1.0",
+    "helmet": "^3.22.0",
+    "laravel-mix": "^5.0.4",
+    "module-alias": "^2.2.2",
+    "mongoose": "^5.9.9",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.4.6",
+    "pino": "^6.2.0",
+    "pug": "^2.0.4",
+    "redis": "^3.0.2",
+    "route-cache": "^0.4.4",
+    "ts-node": "^8.8.2",
+    "tslint": "^6.1.1",
+    "typescript": "^3.8.3"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      ".git",
+      "node_modules"
+    ],
+    "watch": [
+      "src"
+    ],
+    "exec": "npm start",
+    "ext": "ts"
+  },
+  "_moduleAliases": {
+    "@models": "dist/app/Models",
+    "@controllers": "dist/app/Controllers",
+    "@utils": "dist/shared",
+    "@routes": "dist/routes"
+  },
+  "devDependencies": {
+    "@types/express-session": "^1.17.0",
+    "@types/mongoose": "^5.7.12",
+    "@types/node": "^13.13.1",
+    "cross-env": "^7.0.2",
+    "vue-template-compiler": "^2.6.11"
+  }
+}

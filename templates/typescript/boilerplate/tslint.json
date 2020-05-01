@@ -1,0 +1,21 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "no-console": false,
+        "no-submodule-imports": [
+            true,
+            "source-map-support",
+            "@models",
+            "@controllers",
+            "@utils",
+            "@routes"
+        ],
+        "no-implicit-dependencies": [true, "dev", ["@models", "@controllers", "@utils", "@routes"]],
+        "no-boolean-literal-compare": false
+    },
+    "rulesDirectory": []
+}
