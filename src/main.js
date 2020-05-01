@@ -111,12 +111,12 @@ async function copyTemplateFiles(options) {
             process.exit(1);
         }
 
-        templateDirectory += '/boilerplate';
+        templateDirectory = path.join(templateDirectory, 'boilerplate');
         return await createDirectoryContents(templateDirectory, options.object, options);
     };
 
     if (options.isModel) {
-        templateDirectory += '/model';
+        templateDirectory = path.join(templateDirectory, 'model');
         try {
             const { origPath, fullPath, fileName } = await createDirByName(options.object, 'src/app/Models');
             options.fileName = fileName;
@@ -149,10 +149,10 @@ export async function createProject(options) {
         targetDirectory: options.targetDir || process.cwd(),
     };
 
-    const currentFileUrl = import.meta.url;
+    const currentFileUrl = __dirname;
     const templateDir = path.resolve(
         new URL(currentFileUrl).pathname,
-        '../../templates',
+        '../templates',
         options.template.toLowerCase()
     );
     options.templateDirectory = templateDir;
