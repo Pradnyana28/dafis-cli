@@ -1,15 +1,16 @@
-include ../mixins/_seoMeta
-
 <!DOCTYPE html>
-html(lang="en")
+html.font-body(lang="en")
     head
         meta(charset="UTF-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         meta(http-equiv="X-UA-Compatible", content="ie=edge")
+        meta(name="csrf-token", content=csrfToken)
         title #{pageTitle}
+
+        link(href="/css/app.css",rel="stylesheet")
         block head
     body
         #main
-            block content
+            block appContent
         
         script(src="/js/app.js")

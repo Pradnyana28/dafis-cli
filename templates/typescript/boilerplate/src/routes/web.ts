@@ -1,44 +1,15 @@
 import { Application } from 'express';
-import routeCache from 'route-cache';
 
-import HomeController from '@controllers/Frontend/HomeController/HomeController';
+import adminRoute from '@routes/admin';
+import frontRoute from '@routes/front';
 
-class WebRoute extends HomeController {
-    private app: Application;
-    private cacheLimit: Number = 216000;
-    private cache: any;
-
-    constructor (app: Application) {
-        super();
-        this.app = app;
-        this.cache = routeCache.cacheSeconds(this.cacheLimit);
-        this.init();
-    }
-
-    public init() {
-        this.get();
-        this.post();
-        this.put();
-        this.delete();
-    }
-
-    private get(): void {
-        this.app.route('/').get(this.cache, this.Index);
-        this.app.route('/courses').get(this.cache, this.Course);
-        this.app.route('/register').get(this.cache, this.Register);
-    }
-
-    private post(): void {
-
-    }
-
-    private put(): void {
-
-    }
-
-    private delete(): void {
-
-    }
+/**
+ * @param app is an express application
+ * @param cache is optional parameter to cache a route
+ */
+export default (app: Application, cache): void => {
+    // Admin route start with admin prefix
+    app.use(global.config.app.admin_prefix, adminRoute);
+    // Front route start with /
+    app.use(frontRoute(app, cache));
 }
-
-export default WebRoute;

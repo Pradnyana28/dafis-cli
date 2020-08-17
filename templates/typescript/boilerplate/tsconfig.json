@@ -2,17 +2,34 @@
     "compilerOptions": {
         "baseUrl": "./src",
         "paths": {
+            "@app/*": [ "app/*" ],
             "@models/*": [ "app/Models/*" ],
             "@controllers/*": [ "app/Controllers/*" ],
+            "@bootstrap/*": [ "bootstrap/*" ],
+            "@resources/*": [ "resources/*" ],
             "@routes/*": [ "routes/*" ],
-            "@utils/*": [ "shared/*" ]
+            "@utils/*": [ "utils/*" ]
         },
         "module": "commonjs",
         "esModuleInterop": true,
         "target": "es6",
+        "removeComments": true,
         "moduleResolution": "node",
         "sourceMap": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "typeRoots": [
+            "./node_modules/@types",
+            "./types"
+        ]
     },
+    "include": [
+        "src/**/*", "types"
+    ],
+    "files": [
+        "types/globals.d.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ],
     "lib": ["es2015"]
 }

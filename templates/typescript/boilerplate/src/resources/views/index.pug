@@ -1,8 +1,34 @@
-extends layouts/app.pug
-
-append head
-    +seo_meta(pageMeta)
+extends layouts/base
 
 append content
     div.homepage
-        h1 Im the title new
+        //- Banner
+        +hero()
+
+        //- Services
+        .bg-gray
+            +services()
+
+        //- Category: programming
+        .section-category.pt-50(class="md:pt-120")
+            .container.mx-auto.pl-20.pr-20(class="md:pl-50 md:pr-50")
+                h2.text-sm
+                    | !{__('categories.programming.title')}
+                .grid.mt-50(class="sm:grid-cols-1 sm:gap-0 md:grid-cols-3 md:gap-20 lg:grid-cols-4")
+                    each opt in opts
+                        +card(opt)
+                
+        //- Latest Blog
+        .section-category.pt-50(class="md:pt-120")
+            .container.mx-auto.pl-20.pr-20(class="md:pl-50 md:pr-50")
+                h2.text-sm
+                    | !{__('articles.latest')}
+                .grid.mt-50(class="sm:grid-cols-1 sm:gap-0 md:grid-cols-3 md:gap-20 lg:grid-cols-4")
+                    each art in articles
+                        a(href=art.actionLink, title=art.title)
+                            +article(art)
+
+        if !isLoggedIn || typeof isLoggedIn == 'undefined'
+            +cta()
+        else
+            .mb-120

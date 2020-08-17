@@ -6,6 +6,10 @@ class Controller {
     constructor() {
         this.logger = new Logger();
     }
+
+    protected pageTitle(title: string): string {
+        return title +' | '+ global.config.app.title;
+    }
 }
 
 export default Controller;

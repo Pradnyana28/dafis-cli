@@ -1,62 +1,137 @@
-import { model, Model, Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import Logger from '@utils/logger';
 
 class BaseModel {
+    protected defaultQuery: object;
+    protected model: Model<any>;
+
     // share variable within derived class
-    public model: Model<any>;
     protected schema;
     protected logger: Logger;
-    
-    protected schemaName: string;
+
     protected primaryKey: string = '_id';
 
-    protected constructor () {
+    protected constructor() {
         this.logger = new Logger();
-        this.schemaName = 'User';
-        this.schema = require(__dirname +`/${this.schemaName}/${this.schemaName}.Schema`);
-        this.model = model(this.schemaName, this.schema);
+        this.defaultQuery = { deletedAt: null };
     }
 
-    public async all(): Promise<object[]> {
+    /**
+     * @method all
+     * -------------------------------------------
+     * Query all data
+     * -------------------------------------------
+     * @param limit limit the output data
+     * @param sort sort the output data
+     */
+    public async all(limit: number = null, sort: any = { createdAt: -1 }): Promise<any[]> {
         try {
-            return await this.model.find({});
+            if (limit) {
+                return await this.model
+                    .find({ ...this.defaultQuery })
+                    .limit(limit)
+                    .sort(sort)
+                    .exec();
+            }
+            return await this.model
+                .find({ ...this.defaultQuery })
+                .sort(sort)
+                .exec();
         } catch (err) {
             this.logger.error('Failed loading schema data', err, __filename);
             return [];
         }
     }
 
-    public async find(whereClause: object = {}): Promise<object[]> {
+
+    /**
+     * @method find
+     * -------------------------------------------
+     * Query specific data
+     * -------------------------------------------
+     * @param whereClause the where conditions
+     * @param limit limit the output data
+     * @param sort sort the output data
+     */
+    public async find(whereClause: object = {}, limit: number = null, sort: any = { createdAt: -1 }): Promise<any[]> {
         try {
-            return await this.model.find(whereClause);
+            if (limit) {
+                return await this.model
+                    .find({ ...this.defaultQuery, ...whereClause })
+                    .limit(limit)
+                    .sort(sort)
+                    .exec();
+            }
+            return await this.model
+                .find({ ...this.defaultQuery, ...whereClause })
+                .sort(sort)
+                .exec();
         } catch (err) {
             this.logger.error('Failed while retrieving schema data', err, __filename);
             return [];
         }
     }
 
-    public async findById(id: string): Promise<object> {
+    /**
+     * @method findById
+     * -------------------------------------------
+     * Fetch an object with specified identifier
+     * -------------------------------------------
+     * @param id mongo object identifier
+     */
+    public async findById(id: string): Promise<any> {
         try {
-            return await this.findOne({ [this.primaryKey]: id });
+            return await this.findOne({ ...this.defaultQuery, [this.primaryKey]: id });
         } catch (err) {
             this.logger.error('Failed while retrieving schema identifier', err, __filename);
             return null;
         }
     }
 
-    public async findOne(whereClause: object): Promise<object> {
+    /**
+     * @method findOne
+     * -------------------------------------------
+     * Fetch an object by conditions
+     * -------------------------------------------
+     * @param whereClause the where condition
+     */
+    public async findOne(whereClause: object): Promise<any> {
         try {
-            return await this.model.findOne({ ...whereClause, deletedAt: null });
+            return await this.model.findOne({ ...this.defaultQuery, ...whereClause });
         } catch (err) {
             this.logger.error('Failed while retrieving schema data', err, __filename);
             return null;
         }
     }
 
-    public async updateById(id: string, updateClause: object): Promise<object> {
+    /**
+     * @method create
+     * -------------------------------------------
+     * Insert object to the database
+     * -------------------------------------------
+     * @param data the insert object
+     */
+    public async create(data: object): Promise<any> {
         try {
-            const data = await this.model.updateOne({ [this.primaryKey]: id }, updateClause);
+            return await this.model.create(data);
+        } catch (err) {
+            this.logger.error('Failed while creating schema data', err, __filename);
+            return null;
+        }
+    }
+
+    /**
+     * @method updateById
+     * -------------------------------------------
+     * Update all collection data by mongo object identifier
+     * -------------------------------------------
+     * @param id mongo object identifier
+     * @param updateClause object to update
+     */
+    public async updateById(id: string, updateClause: object): Promise<any> {
+        try {
+            const data = await this.model.updateOne({ ...this.defaultQuery, [this.primaryKey]: id }, updateClause);
             if (data) {
                 return await this.findById(id);
             }
@@ -67,9 +142,17 @@ class BaseModel {
         }
     }
 
-    public async update(whereClause: object, updateClause: object): Promise<object> {
+    /**
+     * @method update
+     * -------------------------------------------
+     * Update all collection data by where conditions
+     * -------------------------------------------
+     * @param whereClause the where conditions
+     * @param updateClause object to update
+     */
+    public async update(whereClause: object, updateClause: object): Promise<any> {
         try {
-            const data = await this.model.updateMany({ ...whereClause, deletedAt: null }, updateClause);
+            const data = await this.model.updateMany({ ...this.defaultQuery, ...whereClause }, updateClause);
             if (data) {
                 return await this.find(whereClause);
             }
@@ -80,9 +163,37 @@ class BaseModel {
         }
     }
 
+    /**
+     * @method updateOne
+     * -------------------------------------------
+     * Update a collection by where condition
+     * -------------------------------------------
+     * @param whereClause the where conditions
+     * @param updateClause object to update
+     */
+    public async updateOne(whereClause: object, updateClause: object): Promise<any> {
+        try {
+            const data = await this.model.updateOne({ ...this.defaultQuery, ...whereClause }, updateClause);
+            if (data) {
+                return await this.findOne(whereClause);
+            }
+            return null;
+        } catch (err) {
+            this.logger.error('Failed while retrieving schema data', err, __filename);
+            return null;
+        }
+    }
+
+    /**
+     * @method deleteById
+     * -------------------------------------------
+     * Delete the collection by mongo object identifier
+     * -------------------------------------------
+     * @param id mongo object identifier
+     */
     public async deleteById(id: Types.ObjectId): Promise<boolean> {
         try {
-            return await this.model.updateOne({ [this.primaryKey]: id }, { deletedAt: new Date() })
+            return await this.model.updateOne({ ...this.defaultQuery, [this.primaryKey]: id }, { deletedAt: new Date() })
                 ? true : false;
         } catch (err) {
             this.logger.error('Failed while deleting schema object', err, __filename);
@@ -90,9 +201,16 @@ class BaseModel {
         }
     }
 
+    /**
+     * @method delete
+     * -------------------------------------------
+     * Delete all collection with where condition
+     * -------------------------------------------
+     * @param whereClause the where conditions
+     */
     public async delete(whereClause: object): Promise<boolean> {
         try {
-            return this.model.updateMany({ ...whereClause, deletedAt: null }, { deletedAt: new Date() })
+            return this.model.updateMany({ ...this.defaultQuery, ...whereClause }, { deletedAt: new Date() })
                 ? true : false;
         } catch (err) {
             this.logger.error('Failed while deleting schema object', err, __filename);

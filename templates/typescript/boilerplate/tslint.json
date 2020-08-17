@@ -9,12 +9,15 @@
         "no-submodule-imports": [
             true,
             "source-map-support",
+            "@app",
             "@models",
             "@controllers",
+            "@bootstrap",
+            "@resources",
             "@utils",
             "@routes"
         ],
-        "no-implicit-dependencies": [true, "dev", ["@models", "@controllers", "@utils", "@routes"]],
+        "no-implicit-dependencies": [true, "dev", ["@app", "@models", "@controllers", "@bootstrap", "@resources", "@utils", "@routes"]],
         "no-boolean-literal-compare": false
     },
     "rulesDirectory": []

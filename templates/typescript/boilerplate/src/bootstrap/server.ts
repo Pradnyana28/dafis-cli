@@ -2,50 +2,79 @@ import express, { Application } from 'express';
 
 import base from './init';
 import errorHandler from './error-handler';
-import WebRoute from '@routes/web';
+import config from './config';
+import Routing from './routing';
+import start from './start';
+import middleware from './middleware';
 
 class App {
     public app: Application;
 
-    constructor () {
+    constructor() {
         this.app = express();
-        this.init();
-        this.routing();
     }
 
-    private init(): void {
+    public async init(): Promise<Application> {
+        let server = this.app;
 
         /**
          * base
-         * 
+         * -------------------------------------------
          * This file contain all config need to setup before server is running
-         * Connect to MongoDB, Setup CSRF, and all we need
-         * To secure this server on the run
+         * Connect to DB, and all basic init
          */
-        base(this.app);
+        server = await base(server);
 
         /**
-         * error-handler.ts
-         * 
+         * config
+         * -------------------------------------------
+         * This file contain all config from env that will be distribute to template
+         * Or, some config that come from database
+         */
+        server = await config(server);
+
+        /**
+         * middleware
+         * -------------------------------------------
+         * This file contain all config need to setup before server is running
+         * Setup CSRF, and all we need to secure this server on the run
+         */
+        server = await middleware(server);
+
+        /**
+         * routing
+         * -------------------------------------------
+         * Setup routing for our applications 
+         */
+        server = await this.routing(server);
+
+        /**
+         * error handler
+         * -------------------------------------------
          * This file contain error handler config
          * We will notif developer whenever error occure on production mode
          * But on development we will only display on console log
          */
-        errorHandler(this.app);
-
-    }
-
-    private routing(): void {
+        server = await errorHandler(server);
 
         /**
-         * routing.ts
-         * 
-         * This file contain routing base setup
-         * Then we server the web via our route
+         * start
+         * -------------------------------------------
+         * This file is to use handling start server
          */
-        new WebRoute(this.app);
+        server = await start(server);
 
+        return server;
+    }
+
+    private routing(app: Application): Application {
+        /**
+         * Routing
+         * -------------------------------------------
+         * This class contain routing for api or web
+         */
+        return new Routing(app).init();
     }
 }
 
-export default new App().app;
+export default new App();

@@ -1,10 +1,19 @@
 import { Application } from 'express';
 import chalk from 'chalk';
 
+/**
+ * Start our app
+ * -------------------------------------------
+ * @param app express application
+ */
 const start = (app: Application) => {
     app.listen(app.get('port'), () => {
-        console.log('%s App is running at http://localhost:%d in %s mode', chalk.green('✓'), app.get('port'), app.get('env'));
+        if (app.get('env') != 'test') {
+            console.log('%s %s Serve at http://localhost:%d in %s mode', chalk.green('✓'), chalk.blueBright('INIT'), app.get('port'), chalk.greenBright(app.get('env')));
+        }
     });
+
+    return app;
 }
 
 export default start;

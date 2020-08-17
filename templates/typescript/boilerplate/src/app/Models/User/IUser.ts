@@ -5,6 +5,9 @@ export default interface IUser extends Document {
     lastName: string,
     email: string,
     emailVerified: boolean,
+    username: string,
+    password: string,
+    roles: object,
     address: string,
     address2: string,
     city: object,
@@ -14,7 +17,7 @@ export default interface IUser extends Document {
     provinceId: string,
     provinceName: string,
     avatar: string,
-    options: object,
+    options: Map<any, any>,
     deletedAt: string | null,
 
     generatePassword(password: string): string,
